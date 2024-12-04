@@ -18,10 +18,19 @@ class _LoginPageState extends State<LoginPage>{
   final passwordController = TextEditingController();
 
   Future signIn() async{
+    
+    showDialog(context: context, builder: (context){
+      return Center(child: CircularProgressIndicator());
+    },
+  );
+
+
     await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: emailController.text.trim(),
       password: passwordController.text.trim(),
       );
+      
+      Navigator.of(context).pop();
   }
 
   @override
