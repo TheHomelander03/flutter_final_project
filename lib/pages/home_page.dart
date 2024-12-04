@@ -15,39 +15,35 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser!;
 
-  //document IDs
-
+  // Document IDs
   List<String> docIDs = [];
 
   Future getDocId() async {
     await FirebaseFirestore.instance
-    .collection('users')
-    .orderBy('age', descending: true)
-    .get()
-    .then(
-      (snapshot) => snapshot.docs.forEach((document){
-        print(document.reference);
-        docIDs.add(document.reference.id);
-      }),
-    ); 
+        .collection('users')
+        .orderBy('age', descending: true)
+        .get()
+        .then((snapshot) => snapshot.docs.forEach((document) {
+              print(document.reference);
+              docIDs.add(document.reference.id);
+            }));
   }
-
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Text(
           user.email!,
-          style: TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16),
         ),
         actions: [
           GestureDetector(
-            onTap: (){
-              FirebaseAuth.instance.signOut();
-            },
-            child: Icon(Icons.logout)),
+              onTap: () {
+                FirebaseAuth.instance.signOut();
+              },
+              child: const Icon(Icons.logout)),
         ],
       ),
       body: Center(
@@ -58,24 +54,53 @@ class _HomePageState extends State<HomePage> {
               child: FutureBuilder(
                 future: getDocId(),
                 builder: (context, snapshot) {
-                return ListView.builder(
-                itemCount: docIDs.length,
-                itemBuilder: (context, index){
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ListTile(
-                      title: GetUserName(documentId: docIDs[index]),
-                      tileColor: Colors.grey[200],
-                    ),
+                  return ListView.builder(
+                    itemCount: docIDs.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Card(
+                          elevation: 5,
+                          shadowColor: Colors.grey.withOpacity(0.5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.yellow[100],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.brown,
+                                width: 1.5,
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.person,
+                                  size: 40,
+                                  color: Colors.brown,
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: GetUserName(
+                                    documentId: docIDs[index],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
-              );
-              },
               ),
             ),
           ],
-        )
         ),
+      ),
     );
   }
 }
